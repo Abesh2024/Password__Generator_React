@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 export function CreatePassword() {
+
+    //useState to reflect the changes on the UI
     const [length, setLength] = useState("");
-    const [uppercase, setUppercase] = useState(true);
+    const [uppercase, setUppercase] = useState(false);
     const [lowercase, setLowercase] = useState(false);
     const [special, setSpecial] = useState(false);
     const [numeric, setNumeric] = useState(false);
     const [password, setPassword] = useState("");
 
-    function generatePassword() {
+
+    //useCallback  #hook is used to stop the rerendering of the functions 
+    const generatePassword = useCallback(() => {
         let pass = "";
         let str = "";
 
@@ -20,20 +24,22 @@ export function CreatePassword() {
             return;
         }
 
-        if (uppercase) str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  
+        if (uppercase) str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         if (lowercase) str += "abcdefghijklmnopqrstuvwxyz";
         if (special) str += "!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/";
         if (numeric) str += "0123456789";
 
+
         // Ensure at least one special character and one numeric value
-        // if (special && !str.includes("!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/")) {
-        //     alert("Please include at least one special character");
-        //     return;
-        // }
-        // if (numeric && !str.includes("0123456789")) {
-        //     alert("Please include at least one numeric value");
-        //     return;
-        // }
+        if (special && !str.includes("!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/")) {
+            alert("Please include at least one special character");
+            return;
+        }
+        if (numeric && !str.includes("0123456789")) {
+            alert("Please include at least one numeric value");
+            return;
+        }
+
 
         // Ensure at least one special character and one numeric value in the generated password
         let hasSpecial = false;
@@ -66,7 +72,14 @@ export function CreatePassword() {
         }
 
         setPassword(pass);
-    }
+    }, [length, uppercase, uppercase, special, numeric, password])
+
+
+    //to copy the password
+    const copyPassword = useCallback(() => {
+        window.navigator.clipboard.writeText(password)
+    }, [password]);
+
 
     return (
         <>
@@ -133,6 +146,9 @@ export function CreatePassword() {
             </button>
             <br /><br />
             <input value={password} readOnly />
+            <button
+                onClick={copyPassword}
+            >Copy</button>
         </>
     );
 }

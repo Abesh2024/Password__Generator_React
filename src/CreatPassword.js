@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 
 export function CreatePassword() {
     const [length, setLength] = useState("");
-    const [uppercase, setUppercase] = useState(false);
+    const [uppercase, setUppercase] = useState(true);
     const [lowercase, setLowercase] = useState(false);
     const [special, setSpecial] = useState(false);
     const [numeric, setNumeric] = useState(false);
     const [password, setPassword] = useState("");
 
-    const generatePassword =  useCallback (() => {
+    function generatePassword() {
         let pass = "";
         let str = "";
 
@@ -20,18 +20,53 @@ export function CreatePassword() {
             return;
         }
 
-        if (uppercase) str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if (uppercase) str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  
         if (lowercase) str += "abcdefghijklmnopqrstuvwxyz";
-        if (special) str += `!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/`;
+        if (special) str += "!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/";
         if (numeric) str += "0123456789";
 
-        for (let i = 0; i < length; i++) {
-            let char = Math.floor(Math.random() * str.length);
-            pass += str.charAt(char);
+        // Ensure at least one special character and one numeric value
+        // if (special && !str.includes("!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/")) {
+        //     alert("Please include at least one special character");
+        //     return;
+        // }
+        // if (numeric && !str.includes("0123456789")) {
+        //     alert("Please include at least one numeric value");
+        //     return;
+        // }
+
+        // Ensure at least one special character and one numeric value in the generated password
+        let hasSpecial = false;
+        let hasNumeric = false;
+
+        for (let i = 0; i < length; i++) { //1, 2, 3
+            let char = Math.floor(Math.random() * str.length); //12
+            pass += str.charAt(char);  // u@9Abc  de
+            if (special && !hasSpecial && str.charAt(char).includes("!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/")) {
+                hasSpecial = true;
+            }
+            if (numeric && !hasNumeric && str.charAt(char).includes("0123456789")) {
+                hasNumeric = true;
+            }
+        }
+
+        if (special && !hasSpecial) {
+            // Replace a random character with a special character
+            let specialChar = "!@#$%^&*()_+=-{}|[]\\:;\"'<>,.?/";
+            let randomIndex = Math.floor(Math.random() * pass.length);  //4
+            pass = pass.slice(0, randomIndex) + specialChar.charAt(Math.floor(Math.random() * specialChar.length)) + pass.slice(randomIndex + 1);
+        }                       //u@9A#cde
+
+        if (numeric && !hasNumeric) {
+            // Replace a random character with a numeric value
+            let numericChar = "0123456789";
+            let randomIndex = Math.floor(Math.random() * pass.length);
+            // console.log(randomIndex)
+            pass = pass.slice(0, randomIndex) + numericChar.charAt(Math.floor(Math.random() * numericChar.length)) + pass.slice(randomIndex + 1);
         }
 
         setPassword(pass);
-    }, [lowercase, uppercase, numeric, special, length, password]);
+    }
 
     return (
         <>
